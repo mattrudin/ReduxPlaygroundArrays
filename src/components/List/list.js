@@ -1,30 +1,29 @@
 import React from 'react';
 import './List.css';
 import Tile from '../Tile/Tile';
+import { connect } from 'react-redux';
 
 class List extends React.Component{
-	constructor(props) {
-		super(props)
-		this.state = {
-			tileArray: [0,0,0]
-		}
-	}
-
 	addTile = () => {
-		this.setState({
-			tileArray: [...this.state.tileArray,0]
-		})
+		this.props.dispatch({ type: 'ADD_TILE' });
 	}
 
 	removeTile = () => {
-		this.setState({
-			tileArray: this.state.tileArray.slice(0,-1)
-		})
+		this.props.dispatch({ type: 'REMOVE_TILE' });
+	}
+
+	handleTitleInput = (event) => {
+		this.props.dispatch({ type: 'TITLE', payload: event.target.value });
+	}
+
+	handleDescriptionInput = (event) => {
+		this.props.dispatch({ type: 'DESCRIPTION', payload: event.target.value });
 	}
 
 	render() {
-		const tileArray = this.state.tileArray.map((tile, index) => {
-			return <Tile 	title={index}
+		const tileArray = this.props.tileArray.map((tile, index) => {
+			return <Tile 	title={this.props.title}
+							description={this.props.description}
 							key={index} />
 		})
 
@@ -33,6 +32,8 @@ class List extends React.Component{
 				<div className="buttonRow">
 					<button className='button' onClick={this.addTile}>Add Tile</button>
 					<button className='button' onClick={this.removeTile}>Remove Tile</button>
+					<input type="text" onChange={this.handleTitleInput} />
+					<input type="text" onChange={this.handleDescriptionInput} />
 				</div>
 				<div className="List">
 					{tileArray}
@@ -42,4 +43,10 @@ class List extends React.Component{
 	}
 }
 
-export default List;
+const mapStateToProps = (state) => ({
+	tileArray: state.tileArray,
+	title: state.title,
+	description: state.description
+});
+
+export default connect(mapStateToProps)(List);
